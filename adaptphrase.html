@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Adaptphrase – écrire une phrase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e8edf4; --paper:#ffffff; --ink:#1a2330; --muted:#5d6979; --line:#c7d1de;
+  --sujet:#1f5fbf; --verbe:#c62828; --cod:#2e7d32; --ccl:#c96400; --adj:#7b3fa0;
+  --surligne:#ffe45c; --ok:#2e7d32; --err:#c62828;
+  --font:"Andika","Comic Sans MS","Trebuchet MS",Arial,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141a23; --paper:#1f2733; --ink:#eef2f7; --muted:#a8b3c2; --line:#3a4658;
+    --sujet:#7fb0ff; --verbe:#ff7a7a; --cod:#72d27b; --ccl:#ffac5c; --adj:#cfa2f2;
+    --surligne:#7a6500; --ok:#72d27b; --err:#ff7a7a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141a23; --paper:#1f2733; --ink:#eef2f7; --muted:#a8b3c2; --line:#3a4658;
+  --sujet:#7fb0ff; --verbe:#ff7a7a; --cod:#72d27b; --ccl:#ffac5c; --adj:#cfa2f2;
+  --surligne:#7a6500; --ok:#72d27b; --err:#ff7a7a;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit}
+button:focus-visible{outline:4px solid var(--sujet);outline-offset:3px}
+
+.app{height:100%;display:flex;flex-direction:column;gap:1.4vh;padding:1.4vh 2vw}
+
+/* En-tête */
+header{display:flex;align-items:center;gap:1.4vw;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(1.1rem,1.9vw,1.9rem);font-weight:700;letter-spacing:.01em}
+.niveaux{display:flex;gap:.5vw;flex-wrap:wrap}
+.niv,.tog{font-size:clamp(1rem,1.6vw,1.6rem);padding:.3em .85em;border-radius:999px;border:2px solid var(--line);background:var(--paper);cursor:pointer}
+.niv[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.outils{margin-left:auto;display:flex;gap:.5vw}
+.tog{font-size:clamp(.9rem,1.3vw,1.3rem)}
+.tog[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+
+/* Étape */
+.stage{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.2vh}
+.patron{display:flex;align-items:center;gap:.45em;flex-wrap:wrap;font-size:clamp(.9rem,1.3vw,1.3rem)}
+.nivlab{color:var(--muted);margin-right:.3em}
+.chip{padding:.12em .65em;border-radius:.45em;border:2px solid var(--c);color:var(--c);font-weight:700}
+.chip.on{background:var(--c);color:var(--paper)}
+h2{margin:.15em 0 0;font-size:clamp(1.4rem,2.9vw,3rem);line-height:1.15}
+.aide{display:flex;flex-wrap:wrap;gap:.4em 1.6em;margin:.2em 0 0;font-size:clamp(1rem,1.7vw,1.8rem);color:var(--muted)}
+.msg{font-size:clamp(1rem,1.8vw,1.9rem);padding:.35em .8em;border-radius:.5em;background:var(--paper);border-left:.4em solid var(--c,var(--line))}
+.msg:empty{display:none}
+.msg.err{--c:var(--err);animation:secoue .35s}
+.msg.ok{--c:var(--ok)}
+
+.choix{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:1.2vw}
+.choix.peu{flex:0 1 40vh;grid-template-columns:repeat(var(--n),1fr);grid-template-rows:minmax(0,1fr)}
+.choix.termine{grid-template-columns:1fr;grid-template-rows:1fr}
+.cell{position:relative;min-height:0;min-width:0}
+.card{width:100%;height:100%;font-size:clamp(1.4rem,3vw,3.3rem);background:var(--paper);border:3px solid var(--line);border-left:1.1rem solid var(--c);border-radius:1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.12em;padding:.3em;line-height:1.15;cursor:pointer;touch-action:manipulation}
+.card:active{transform:scale(.98)}
+.peu .card{font-size:clamp(2rem,5vw,5.4rem)}
+.card .emo{font-size:1.45em;line-height:1}
+.card .sous{font-size:.42em;color:var(--muted)}
+.noimg .card .emo{display:none}
+.say{position:absolute;top:.45rem;right:.45rem;width:2.8rem;height:2.8rem;border-radius:50%;border:2px solid var(--line);background:var(--paper);font-size:1.25rem;cursor:pointer;display:grid;place-items:center}
+.fini{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh}
+.fini .gros{font-size:clamp(1.4rem,2.8vw,2.8rem);padding:.45em 1.2em;border-radius:.7em;border:3px solid var(--ink);background:var(--paper);cursor:pointer}
+.fini .gros.plein{background:var(--ink);color:var(--paper)}
+
+/* Bande de la phrase */
+.phrase{background:var(--paper);border:3px solid var(--line);border-radius:1rem;padding:1.4vh 2vw 1.2vh}
+.bande{display:flex;flex-wrap:wrap;align-items:flex-end;column-gap:.35em;row-gap:.25em;font-size:clamp(1.8rem,4.2vw,4.8rem);min-height:1.8em}
+.seg{display:inline-flex;flex-direction:column;align-items:center}
+.seg .w{color:var(--c);border-bottom:.06em solid var(--line);padding:0 .08em;white-space:nowrap}
+.seg.vide .w{min-width:2.2em;text-align:center;color:var(--muted);border-bottom-style:dashed}
+.seg .lab{font-size:.3em;font-weight:700;color:var(--c);visibility:hidden}
+.showfun .seg .lab{visibility:visible}
+.r-adj{color:var(--adj)}
+.fin{background:var(--surligne);border-radius:.12em}
+.trou{display:inline-block;width:.75em;height:.85em;margin-left:.05em;border:.06em dashed currentColor;border-radius:.15em;vertical-align:-.08em;animation:clig 1.2s infinite}
+.marque{outline:.055em solid var(--ink);outline-offset:.03em;border-radius:.2em;color:var(--ink)}
+.actions{display:flex;gap:1vw;flex-wrap:wrap;margin-top:1vh}
+.actions button{font-size:clamp(1rem,1.7vw,1.8rem);padding:.3em .9em;border-radius:.6em;border:2px solid var(--line);background:var(--bg);cursor:pointer}
+.actions #bLire{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.actions button:disabled{opacity:.4;cursor:default}
+
+@keyframes clig{50%{opacity:.25}}
+@keyframes secoue{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@media (prefers-reduced-motion: reduce){.trou,.msg.err{animation:none}}
+@media (max-aspect-ratio:1/1){
+  .choix{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,minmax(0,1fr))}
+  .outils{margin-left:0}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Adaptphrase</h1>
+    <nav class="niveaux" id="niveaux" aria-label="Choisir le niveau"></nav>
+    <div class="outils">
+      <button class="tog" id="tFun" aria-pressed="false">Fonctions</button>
+      <button class="tog" id="tImg" aria-pressed="true">Images</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div>
+      <div class="patron" id="patron"></div>
+      <h2 id="titre"></h2>
+      <div class="aide" id="aide"></div>
+    </div>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+    <div class="choix" id="choix"></div>
+  </main>
+
+  <section class="phrase" aria-label="Ma phrase">
+    <div class="bande" id="bande"></div>
+    <div class="actions">
+      <button id="bLire">🔊 Lire la phrase</button>
+      <button id="bAnnul">↩ Annuler</button>
+      <button id="bNouv">Nouvelle phrase</button>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ---------- Mots ---------- */
+const SUJETS=[
+  {n:'chat',g:'m',end:'s',e:'🐱'},
+  {n:'chevalier',g:'m',end:'s',e:'🛡️'},
+  {n:'chameau',g:'m',end:'x',e:'🐫'},
+  {n:'princesse',g:'f',end:'s',e:'👸'},
+  {n:'sorcière',g:'f',end:'s',e:'🧙‍♀️'},
+  {n:'fée',g:'f',end:'s',e:'🧚'}
+];
+const VERBES_I=[
+  {v:'danse',e:'💃'},{v:'chante',e:'🎤'},{v:'saute',e:'🤸'},
+  {v:'joue',e:'🎲'},{v:'nage',e:'🏊'},{v:'marche',e:'🚶'}
+];
+const VERBES_T=[
+  {v:'mange',e:'😋'},{v:'regarde',e:'👀'},{v:'cherche',e:'🔍'},
+  {v:'attrape',e:'🤲'},{v:'dessine',e:'✏️'},{v:'lance',e:'🎯'}
+];
+const CODS=[
+  {d:'le',n:'ballon',g:'m',e:'⚽'},
+  {d:'la',n:'pomme',g:'f',e:'🍎'},
+  {d:'les',n:'fleur',end:'s',g:'f',p:true,e:'🌸'},
+  {d:'le',n:'gâteau',g:'m',e:'🎂'},
+  {d:'la',n:'couronne',g:'f',e:'👑'},
+  {d:'les',n:'bonbon',end:'s',g:'m',p:true,e:'🍬'}
+];
+const CCLS=[
+  {t:'dans la forêt',e:'🌲'},{t:'au château',e:'🏰'},{t:'sur la plage',e:'🏖️'},
+  {t:'dans le jardin',e:'🌷'},{t:"à l'école",e:'🏫'},{t:'sur la lune',e:'🌙'}
+];
+const ADJS=[
+  {a:'petit',pos:'av',e:'🐭'},{a:'grand',pos:'av',e:'🦒'},{a:'joli',pos:'av',e:'🌈'},
+  {a:'méchant',pos:'ap',e:'😠'},{a:'vert',pos:'ap',e:'🟢'},{a:'noir',pos:'ap',e:'⚫'}
+];
+
+const ROLES={
+  sujet:{lab:'sujet',q:'Qui ?',c:'--sujet'},
+  verbe:{lab:'verbe',q:'Fait quoi ?',c:'--verbe'},
+  cod:{lab:'COD',q:'Quoi ?',c:'--cod'},
+  ccl:{lab:'CC de lieu',q:'Où ?',c:'--ccl'},
+  adj:{lab:'adjectif',q:'Comment ?',c:'--adj'}
+};
+const NIVEAUX={
+  1:{steps:['gn','verbe','ccl'],v:VERBES_I,pat:['sujet','verbe','ccl']},
+  2:{steps:['nom','det','finNom','verbe','finVerbe','ccl'],v:VERBES_I,pat:['sujet','verbe','ccl']},
+  3:{steps:['nom','det','finNom','verbe','finVerbe','cod'],v:VERBES_T,pat:['sujet','verbe','cod']},
+  4:{steps:['nom','det','finNom','verbe','finVerbe','cod','ccl'],v:VERBES_T,pat:['sujet','verbe','cod','ccl']},
+  5:{steps:['nom','det','finNom','verbe','finVerbe','cod','ccl','adj','adjPlace','finAdj'],v:VERBES_T,pat:['sujet','verbe','cod','ccl'],adj:true}
+};
+const ROLE_ETAPE={gn:'sujet',nom:'sujet',det:'sujet',finNom:'sujet',verbe:'verbe',finVerbe:'verbe',cod:'cod',ccl:'ccl',adj:'adj',adjPlace:'adj',finAdj:'adj'};
+
+/* ---------- État ---------- */
+let niveau=1, S=neuf(), hist=[], msg=null, voirFonctions=false, voirImages=true;
+function neuf(){return{noun:null,det:null,nounEnd:false,verb:null,verbEnd:false,cod:null,ccl:null,adj:null,adjTarget:null,adjEnd:null};}
+const pluriel=()=>S.det==='les';
+function applicable(st){return (st==='finNom'||st==='finVerbe')?pluriel():true;}
+function fait(st){
+  switch(st){
+    case 'gn':case 'nom':return !!S.noun;
+    case 'det':return !!S.det;
+    case 'finNom':return S.nounEnd;
+    case 'verbe':return !!S.verb;
+    case 'finVerbe':return S.verbEnd;
+    case 'cod':return !!S.cod;
+    case 'ccl':return !!S.ccl;
+    case 'adj':return !!S.adj;
+    case 'adjPlace':return !!S.adjTarget;
+    case 'finAdj':return S.adjEnd!==null;
+  }
+}
+function etape(){for(const st of NIVEAUX[niveau].steps){if(applicable(st)&&!fait(st))return st;}return null;}
+
+/* ---------- Voix ---------- */
+let voix=null;
+function chargeVoix(){
+  const v=speechSynthesis.getVoices().filter(x=>x.lang&&x.lang.toLowerCase().startsWith('fr'));
+  voix=v.find(x=>/fr[-_]FR/i.test(x.lang))||v[0]||null;
+}
+if('speechSynthesis' in window){chargeVoix();speechSynthesis.onvoiceschanged=chargeVoix;}
+function dire(t){
+  if(!('speechSynthesis' in window)||!t)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang='fr-FR'; if(voix)u.voice=voix; u.rate=.85;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- Construction du texte ---------- */
+function mk(html){return{
+  H:html,
+  fin:x=>html?`<span class="fin">${x}</span>`:x,
+  trou:()=>html?'<span class="trou"></span>':'',
+  adj:x=>html?`<span class="r-adj">${x}</span>`:x
+};}
+function motAdj(b){return S.adj.a+(S.adjEnd===null?b.trou():(S.adjEnd?b.fin(S.adjEnd):''));}
+function groupe(b,det,nom,cible){
+  const a=(S.adj&&S.adjTarget===cible)?b.adj(motAdj(b)):'';
+  const p=[det];
+  if(a&&S.adj.pos==='av')p.push(a);
+  p.push(nom);
+  if(a&&S.adj.pos==='ap')p.push(a);
+  return p.filter(Boolean).join(' ');
+}
+function txtSujet(b,maj){
+  if(!S.noun)return null;
+  let det=S.det||b.trou();
+  if(maj&&S.det){
+    det=S.det[0].toUpperCase()+S.det.slice(1);
+    if(b.H&&maj==='marque')det=`<span class="marque">${det[0]}</span>${det.slice(1)}`;
+  }
+  let n=S.noun.n;
+  if(pluriel())n+=S.nounEnd?b.fin(S.noun.end):b.trou();
+  return groupe(b,det,n,'sujet');
+}
+function txtVerbe(b){if(!S.verb)return null;return S.verb.v+(pluriel()?(S.verbEnd?b.fin('nt'):b.trou()):'');}
+function txtCod(b){if(!S.cod)return null;return groupe(b,S.cod.d,S.cod.n+(S.cod.p?b.fin(S.cod.end):''),'cod');}
+function txtCcl(){return S.ccl?S.ccl.t:null;}
+const GET={sujet:txtSujet,verbe:txtVerbe,cod:txtCod,ccl:txtCcl};
+function phraseTexte(){
+  const b=mk(false);
+  const parts=NIVEAUX[niveau].pat.map(r=>GET[r](b,true)).filter(Boolean);
+  if(!parts.length)return '';
+  return parts.join(' ')+(etape()===null?'.':'');
+}
+
+/* ---------- Actions ---------- */
+function maj(fn,m){hist.push(JSON.stringify(S));fn();msg=m||null;rendu();if(etape()===null)setTimeout(()=>dire(phraseTexte()),350);}
+function erreur(x){msg={t:'err',x};rendu();}
+function nouvelle(){S=neuf();hist=[];msg=null;rendu();}
+function annuler(){if(!hist.length)return;S=JSON.parse(hist.pop());msg=null;rendu();}
+function changeNiveau(k){niveau=k;nouvelle();}
+
+/* ---------- Rendu ---------- */
+const $=id=>document.getElementById(id);
+
+function carte(o,role){
+  const cell=document.createElement('div');cell.className='cell';
+  const bt=document.createElement('button');bt.className='card';
+  bt.style.setProperty('--c',`var(${ROLES[o.r||role].c})`);
+  bt.innerHTML=(o.e?`<span class="emo" aria-hidden="true">${o.e}</span>`:'')+`<span class="mot">${o.h}</span>`+(o.sous?`<span class="sous">${o.sous}</span>`:'');
+  bt.onclick=()=>{if(o.dit)dire(o.dit);o.go();};
+  cell.appendChild(bt);
+  if(o.dit){
+    const s=document.createElement('button');s.className='say';s.textContent='🔊';
+    s.setAttribute('aria-label','Écouter : '+o.dit);
+    s.onclick=e=>{e.stopPropagation();dire(o.dit);};
+    cell.appendChild(s);
+  }
+  return cell;
+}
+
+function rendEtape(){
+  const st=etape(), N=NIVEAUX[niveau], role=st?ROLE_ETAPE[st]:null;
+  const chips=[...N.pat,...(N.adj?['adj']:[])];
+  $('patron').innerHTML=`<span class="nivlab">Niveau ${niveau}</span>`+chips.map(r=>`<span class="chip${r===role?' on':''}" style="--c:var(${ROLES[r].c})">${ROLES[r].q}</span>`).join('');
+  const m=$('msg');m.className='msg'+(msg?' '+msg.t:'');m.textContent=msg?msg.x:'';
+  if(msg&&msg.t==='err'){m.style.animation='none';void m.offsetWidth;m.style.animation='';}
+
+  const b=mk(false);
+  let titre='',aide=[],opts=[],peu=false;
+  switch(st){
+    case 'gn':
+      titre='Qui ? Choisis le sujet de ta phrase.';
+      opts=SUJETS.map(s=>{const d=s.g==='m'?'le':'la';return{h:`${d} ${s.n}`,e:s.e,dit:`${d} ${s.n}`,go:()=>maj(()=>{S.noun=s;S.det=d;})};});
+      break;
+    case 'nom':
+      titre='Qui ? Choisis un nom.';
+      opts=SUJETS.map(s=>({h:s.n,e:s.e,dit:s.n,go:()=>maj(()=>{S.noun=s;})}));
+      break;
+    case 'det':
+      titre=`Choisis le déterminant pour « ${S.noun.n} ».`;
+      aide=['le : un seul (masculin)','la : une seule (féminin)','les : plusieurs'];
+      peu=true;
+      opts=['le','la','les'].map(d=>({h:d,go:()=>{
+        if(d!=='les'&&(d==='le')!==(S.noun.g==='m'))
+          erreur(`« ${d} ${S.noun.n} » ne va pas : ${S.noun.n} est ${S.noun.g==='m'?'masculin, on dit « le »':'féminin, on dit « la »'}.`);
+        else maj(()=>{S.det=d;});
+      }}));
+      break;
+    case 'finNom':
+      titre='Attention : avec « les », la fin du nom change !';
+      aide=['Il y en a plusieurs : on ajoute s ou x à la fin du nom.'];
+      peu=true;
+      opts=['s','x'].map(f=>({h:`${S.noun.n}<span class="fin">${f}</span>`,sous:`+ ${f}`,go:()=>{
+        if(f===S.noun.end)maj(()=>{S.nounEnd=true;},{t:'ok',x:`Oui ! les ${S.noun.n}${f}`});
+        else erreur(S.noun.end==='x'?'Non : les noms en « eau » prennent un x.':`Non : pour « ${S.noun.n} », on n'ajoute pas un x.`);
+      }}));
+      break;
+    case 'verbe':{
+      const s=txtSujet(b,false);
+      titre=pluriel()?`Que font ${s} ?`:`Que fait ${s} ?`;
+      opts=N.v.map(v=>({h:v.v,e:v.e,dit:v.v,go:()=>maj(()=>{S.verb=v;})}));
+      break;}
+    case 'finVerbe':
+      titre='Attention : la fin du verbe change aussi !';
+      aide=['Ils sont plusieurs : quelle est la bonne fin du verbe ?'];
+      peu=true;
+      opts=['s','nt'].map(f=>({h:`${S.verb.v}<span class="fin">${f}</span>`,sous:`+ ${f}`,go:()=>{
+        if(f==='nt')maj(()=>{S.verbEnd=true;},{t:'ok',x:`Oui ! ils ${S.verb.v}nt : on n'entend pas « nt », mais on l'écrit.`});
+        else erreur('Non : le s, c\'est pour les noms. Le verbe prend une autre fin.');
+      }}));
+      break;
+    case 'cod':
+      titre=`${txtSujet(b,true)} ${txtVerbe(b)} quoi ?`;
+      opts=CODS.map(c=>({h:`${c.d} ${c.n}${c.p?`<span class="fin">${c.end}</span>`:''}`,e:c.e,dit:`${c.d} ${c.n}${c.p?c.end:''}`,go:()=>maj(()=>{S.cod=c;})}));
+      break;
+    case 'ccl':
+      titre='Où ? Choisis un lieu.';
+      opts=CCLS.map(c=>({h:c.t,e:c.e,dit:c.t,go:()=>maj(()=>{S.ccl=c;})}));
+      break;
+    case 'adj':
+      titre='Comment ? Choisis un adjectif pour décrire.';
+      aide=['Ensuite, tu le mettras dans le sujet ou dans le COD.'];
+      opts=ADJS.map(a=>({h:a.a,e:a.e,dit:a.a,go:()=>maj(()=>{S.adj=a;})}));
+      break;
+    case 'adjPlace':{
+      titre=`Où mets-tu « ${S.adj.a} » ?`;
+      peu=true;
+      const h=mk(true), avant=S.adjTarget;
+      S.adjTarget='sujet'; const pS=txtSujet(h,false);
+      S.adjTarget='cod'; const pC=txtCod(h);
+      S.adjTarget=avant;
+      opts=[
+        {r:'sujet',h:pS,sous:'dans le sujet',go:()=>maj(()=>{S.adjTarget='sujet';})},
+        {r:'cod',h:pC,sous:'dans le COD',go:()=>maj(()=>{S.adjTarget='cod';})}
+      ];
+      break;}
+    case 'finAdj':{
+      const sj=S.adjTarget==='sujet';
+      const fem=sj?S.noun.g==='f':S.cod.g==='f';
+      const pl=sj?pluriel():!!S.cod.p;
+      const nom=sj?S.noun.n+(pl?S.noun.end:''):S.cod.n+(S.cod.p?S.cod.end:'');
+      const attendu=(fem?'e':'')+(pl?'s':'');
+      titre=`L'adjectif s'accorde avec « ${nom} ».`;
+      aide=['féminin : on ajoute e','pluriel : on ajoute s'];
+      peu=true;
+      opts=['','e','s','es'].map(f=>({h:S.adj.a+(f?`<span class="fin">${f}</span>`:''),sous:f?`+ ${f}`:'rien',go:()=>{
+        if(f===attendu)maj(()=>{S.adjEnd=f;},{t:'ok',x:`Oui ! « ${nom} » est ${fem?'féminin':'masculin'} et ${pl?'pluriel':'singulier'}.`});
+        else erreur(`Non : « ${nom} » est ${fem?'féminin':'masculin'} et ${pl?'pluriel (plusieurs)':'singulier (un seul)'}.`);
+      }}));
+      break;}
+    case null:
+      titre='Ta phrase est terminée !';
+      aide=['Relis-la.','Vérifie la majuscule au début et le point à la fin.','Puis recopie-la.'];
+      break;
+  }
+
+  $('titre').textContent=titre;
+  $('aide').innerHTML=aide.map(a=>`<span>${a}</span>`).join('');
+  const C=$('choix');C.innerHTML='';
+  if(st===null){
+    C.className='choix termine';
+    const f=document.createElement('div');f.className='fini';
+    f.innerHTML='<button class="gros plein" id="fLire">🔊 Lire la phrase</button><button class="gros" id="fNouv">Nouvelle phrase</button>';
+    C.appendChild(f);
+    $('fLire').onclick=()=>dire(phraseTexte());
+    $('fNouv').onclick=nouvelle;
+  }else{
+    C.className='choix'+(peu?' peu':'');
+    C.style.setProperty('--n',opts.length);
+    opts.forEach(o=>C.appendChild(carte(o,role)));
+  }
+}
+
+function rendBande(){
+  const b=mk(true), fini=etape()===null, pat=NIVEAUX[niveau].pat;
+  $('bande').innerHTML=pat.map((r,i)=>{
+    let t=GET[r](b,fini?'marque':true);
+    const vide=t===null; if(vide)t='…';
+    if(fini&&i===pat.length-1)t+='<span class="marque">.</span>';
+    return `<span class="seg${vide?' vide':''}" style="--c:var(${ROLES[r].c})"><span class="w">${t}</span><span class="lab">${ROLES[r].lab}</span></span>`;
+  }).join('');
+  $('bLire').disabled=!phraseTexte();
+  $('bAnnul').disabled=!hist.length;
+}
+
+function rendNiveaux(){
+  const nav=$('niveaux');nav.innerHTML='';
+  Object.keys(NIVEAUX).forEach(k=>{
+    const bt=document.createElement('button');bt.className='niv';
+    bt.textContent='Niveau '+k;bt.setAttribute('aria-pressed',String(+k===niveau));
+    bt.onclick=()=>changeNiveau(+k);nav.appendChild(bt);
+  });
+}
+
+function rendu(){
+  document.body.classList.toggle('showfun',voirFonctions);
+  document.body.classList.toggle('noimg',!voirImages);
+  $('tFun').setAttribute('aria-pressed',String(voirFonctions));
+  $('tImg').setAttribute('aria-pressed',String(voirImages));
+  rendNiveaux();rendEtape();rendBande();
+}
+
+$('tFun').onclick=()=>{voirFonctions=!voirFonctions;rendu();};
+$('tImg').onclick=()=>{voirImages=!voirImages;rendu();};
+$('bLire').onclick=()=>dire(phraseTexte());
+$('bAnnul').onclick=annuler;
+$('bNouv').onclick=nouvelle;
+rendu();
+</script>
+</body>
+</html>
