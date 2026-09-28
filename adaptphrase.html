@@ -37,38 +37,38 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-tap-h
 button{font-family:inherit;color:inherit}
 button:focus-visible{outline:4px solid var(--sujet);outline-offset:3px}
 
-.app{height:100%;display:flex;flex-direction:column;gap:1.4vh;padding:1.4vh 2vw}
+.app{height:100%;display:flex;flex-direction:column;gap:1vh;padding:1vh 1.6vw}
 
 /* En-tête */
-header{display:flex;align-items:center;gap:1.4vw;flex-wrap:wrap}
-h1{margin:0;font-size:clamp(1.1rem,1.9vw,1.9rem);font-weight:700;letter-spacing:.01em}
+header{display:flex;align-items:center;gap:1vw;flex-wrap:wrap}
+h1{margin:0;font-size:clamp(1rem,1.4vw,1.4rem);font-weight:700;letter-spacing:.01em}
 .niveaux{display:flex;gap:.5vw;flex-wrap:wrap}
-.niv,.tog{font-size:clamp(1rem,1.6vw,1.6rem);padding:.3em .85em;border-radius:999px;border:2px solid var(--line);background:var(--paper);cursor:pointer}
+.niv,.tog{font-size:clamp(.85rem,1.15vw,1.2rem);padding:.2em .7em;border-radius:999px;border:2px solid var(--line);background:var(--paper);cursor:pointer}
 .niv[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .outils{margin-left:auto;display:flex;gap:.5vw}
-.tog{font-size:clamp(.9rem,1.3vw,1.3rem)}
+.tog{font-size:clamp(.8rem,1.05vw,1.1rem)}
 .tog[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
 
 /* Étape */
-.stage{flex:1;min-height:0;display:flex;flex-direction:column;gap:1.2vh}
-.patron{display:flex;align-items:center;gap:.45em;flex-wrap:wrap;font-size:clamp(.9rem,1.3vw,1.3rem)}
+.stage{flex:1;min-height:0;display:flex;flex-direction:column;gap:.8vh}
+.patron{display:flex;align-items:center;gap:.35em;flex-wrap:wrap;font-size:clamp(.8rem,1.05vw,1.1rem)}
 .nivlab{color:var(--muted);margin-right:.3em}
 .chip{padding:.12em .65em;border-radius:.45em;border:2px solid var(--c);color:var(--c);font-weight:700}
 .chip.on{background:var(--c);color:var(--paper)}
-h2{margin:.15em 0 0;font-size:clamp(1.4rem,2.9vw,3rem);line-height:1.15}
-.aide{display:flex;flex-wrap:wrap;gap:.4em 1.6em;margin:.2em 0 0;font-size:clamp(1rem,1.7vw,1.8rem);color:var(--muted)}
-.msg{font-size:clamp(1rem,1.8vw,1.9rem);padding:.35em .8em;border-radius:.5em;background:var(--paper);border-left:.4em solid var(--c,var(--line))}
+h2{margin:0;font-size:clamp(1.15rem,2vw,2.1rem);line-height:1.15}
+.aide{display:flex;flex-wrap:wrap;gap:.2em 1.4em;margin:.1em 0 0;font-size:clamp(.9rem,1.25vw,1.3rem);color:var(--muted)}
+.msg{font-size:clamp(.95rem,1.4vw,1.5rem);padding:.2em .7em;border-radius:.5em;background:var(--paper);border-left:.4em solid var(--c,var(--line))}
 .msg:empty{display:none}
 .msg.err{--c:var(--err);animation:secoue .35s}
 .msg.ok{--c:var(--ok)}
 
 .choix{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:1.2vw}
-.choix.peu{flex:0 1 40vh;grid-template-columns:repeat(var(--n),1fr);grid-template-rows:minmax(0,1fr)}
+.choix.peu{flex:0 1 52vh;grid-template-columns:repeat(var(--n),1fr);grid-template-rows:minmax(0,1fr)}
 .choix.termine{grid-template-columns:1fr;grid-template-rows:1fr}
 .cell{position:relative;min-height:0;min-width:0}
-.card{width:100%;height:100%;font-size:clamp(1.4rem,3vw,3.3rem);background:var(--paper);border:3px solid var(--line);border-left:1.1rem solid var(--c);border-radius:1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.12em;padding:.3em;line-height:1.15;cursor:pointer;touch-action:manipulation}
+.card{width:100%;height:100%;font-size:clamp(1.5rem,3.4vw,3.8rem);background:var(--paper);border:3px solid var(--line);border-left:1.1rem solid var(--c);border-radius:1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.12em;padding:.3em;line-height:1.15;cursor:pointer;touch-action:manipulation}
 .card:active{transform:scale(.98)}
-.peu .card{font-size:clamp(2rem,5vw,5.4rem)}
+.peu .card{font-size:clamp(2.2rem,5.6vw,6rem)}
 .card .emo{font-size:1.45em;line-height:1}
 .card .sous{font-size:.42em;color:var(--muted)}
 .noimg .card .emo{display:none}
@@ -78,8 +78,8 @@ h2{margin:.15em 0 0;font-size:clamp(1.4rem,2.9vw,3rem);line-height:1.15}
 .fini .gros.fonce{background:var(--ink);color:var(--paper)}
 
 /* Bande de la phrase */
-.phrase{background:var(--paper);border:3px solid var(--line);border-radius:1rem;padding:1.4vh 2vw 1.2vh}
-.bande{display:flex;flex-wrap:wrap;align-items:flex-end;column-gap:.35em;row-gap:.25em;font-size:clamp(1.8rem,4.2vw,4.8rem);min-height:1.8em}
+.phrase{background:var(--paper);border:3px solid var(--line);border-radius:1rem;padding:1vh 1.6vw}
+.bande{display:flex;flex-wrap:wrap;align-items:flex-end;column-gap:.35em;row-gap:.25em;font-size:clamp(1.6rem,3.4vw,3.8rem);min-height:1.8em}
 .seg{display:inline-flex;flex-direction:column;align-items:center}
 .seg .w{color:var(--c);border-bottom:.06em solid var(--line);padding:0 .08em;white-space:nowrap}
 .seg.vide .w{min-width:2.2em;text-align:center;color:var(--muted);border-bottom-style:dashed}
@@ -89,7 +89,11 @@ h2{margin:.15em 0 0;font-size:clamp(1.4rem,2.9vw,3rem);line-height:1.15}
 .fin{background:var(--surligne);border-radius:.12em}
 .trou{display:inline-block;width:.75em;height:.85em;margin-left:.05em;border:.06em dashed currentColor;border-radius:.15em;vertical-align:-.08em;animation:clig 1.2s infinite}
 .marque{outline:.055em solid var(--ink);outline-offset:.03em;border-radius:.2em;color:var(--ink)}
-.actions{display:flex;gap:1vw;flex-wrap:wrap;margin-top:1vh}
+.actions{display:flex;gap:1vw;flex-wrap:wrap;align-items:center;margin-top:.8vh}
+.nature{margin-left:auto;display:flex;align-items:center;gap:.8vw;font-size:clamp(.95rem,1.4vw,1.5rem);color:var(--muted)}
+.nature img{height:clamp(3.5rem,11vh,8rem);width:auto}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .nature img{filter:invert(1)}}
+:root[data-theme="dark"] .nature img{filter:invert(1)}
 .actions button{font-size:clamp(1rem,1.7vw,1.8rem);padding:.3em .9em;border-radius:.6em;border:2px solid var(--line);background:var(--bg);cursor:pointer}
 .actions #bLire{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .actions button:disabled{opacity:.4;cursor:default}
@@ -132,9 +136,9 @@ h2{margin:.15em 0 0;font-size:clamp(1.4rem,2.9vw,3rem);line-height:1.15}
   <header>
     <h1>Adaptphrase</h1>
     <nav class="niveaux" id="niveaux" aria-label="Choisir le niveau"></nav>
+    <div class="patron" id="patron"></div>
     <div class="outils">
       <button class="tog" id="bTirage">🎲 Nouveaux mots</button>
-      <button class="tog" id="tNat" aria-pressed="true">Natures</button>
       <button class="tog" id="tFun" aria-pressed="false">Fonctions</button>
       <button class="tog" id="tImg" aria-pressed="true">Images</button>
     </div>
@@ -142,7 +146,6 @@ h2{margin:.15em 0 0;font-size:clamp(1.4rem,2.9vw,3rem);line-height:1.15}
 
   <main class="stage">
     <div>
-      <div class="patron" id="patron"></div>
       <h2 id="titre"></h2>
       <div class="aide" id="aide"></div>
     </div>
@@ -156,6 +159,7 @@ h2{margin:.15em 0 0;font-size:clamp(1.4rem,2.9vw,3rem);line-height:1.15}
       <button id="bLire">🔊 Lire la phrase</button>
       <button id="bAnnul">↩ Annuler</button>
       <button id="bNouv">Nouvelle phrase</button>
+      <div class="nature" id="nature" aria-live="polite"></div>
     </div>
   </section>
 </div>
@@ -265,7 +269,7 @@ const NIVEAUX={
 const ROLE_ETAPE={gn:'sujet',nom:'sujet',det:'sujet',finNom:'sujet',verbe:'verbe',finVerbe:'verbe',cod:'cod',codNom:'cod',codDet:'cod',finCod:'cod',ccl:'ccl',adj:'adj',adjPlace:'adj',finAdj:'adj'};
 
 /* ---------- État ---------- */
-let niveau=1, S=neuf(), hist=[], msg=null, voirFonctions=false, voirImages=true, voirNatures=true;
+let niveau=1, S=neuf(), hist=[], msg=null, voirFonctions=false, voirImages=true;
 function neuf(){return{noun:null,det:null,nounEnd:false,verb:null,verbEnd:false,cod:null,codDet:null,codEnd:false,ccl:null,adj:null,adjTarget:null,adjEnd:null};}
 const pluriel=()=>S.det==='les';
 const codPl=()=>S.codDet==='les';
@@ -360,7 +364,7 @@ function phraseHTML(nat){
 function ouvrePlein(){
   const n=phraseTexte().length;
   const taille=Math.min(8,160/n);
-  $('pA').innerHTML=phraseHTML(voirNatures); $('pA').style.fontSize=taille+'vw';
+  $('pA').innerHTML=phraseHTML(true); $('pA').style.fontSize=taille+'vw';
   $('pM').innerHTML=phraseHTML(false); $('pM').style.fontSize=(taille*1.05)+'vw';
   $('plein').hidden=false;
   try{const d=document.documentElement;if(d.requestFullscreen&&!document.fullscreenElement)d.requestFullscreen().catch(()=>{});}catch(e){}
@@ -406,7 +410,7 @@ function carte(o,role){
 function choixNom(liste,poser){return liste.map(s=>({h:B.mot(s.n,'N'),e:s.e,dit:s.n,go:()=>maj(()=>poser(s))}));}
 function choixDet(nom,poser){return ['le','la','les'].map(d=>({h:B.mot(d,'D'),go:()=>{const f=detFaux(d,nom);if(f)erreur(f);else maj(()=>poser(d));}}));}
 function choixFin(nom,poser){return ['s','x'].map(f=>({h:B.mot(`${nom.n}<span class="fin">${f}</span>`,'N'),sous:`+ ${f}`,go:()=>{const e=finFaux(f,nom);if(e)erreur(e);else maj(()=>poser(),{t:'ok',x:`Oui ! les ${nom.n}${f}`});}}));}
-const B=mk(true,true);
+const B=mk(true,false);
 
 function rendEtape(){
   const st=etape(), N=NIVEAUX[niveau], role=st?ROLE_ETAPE[st]:null;
@@ -508,6 +512,9 @@ function rendEtape(){
       break;
   }
 
+  const NAT={gn:'DN',nom:'N',det:'D',finNom:'N',verbe:'V',finVerbe:'V',cod:'DN',codNom:'N',codDet:'D',finCod:'N',ccl:'DN',adj:'A',adjPlace:'A',finAdj:'A'};
+  const ks=st?NAT[st].split(''):[];
+  $('nature').innerHTML=ks.length?'<span>Je choisis :</span>'+ks.map(k=>`<img src="${IMG[k]}" alt="${NAT_LAB[k]}">`).join(''):'';
   $('titre').textContent=titre;
   $('aide').innerHTML=aide.map(a=>`<span>${a}</span>`).join('');
   const C=$('choix');C.innerHTML='';
@@ -527,12 +534,12 @@ function rendEtape(){
 }
 
 function rendBande(){
-  const b=mk(true,voirNatures), fini=etape()===null, pat=NIVEAUX[niveau].pat;
+  const b=mk(true,false), fini=etape()===null, pat=NIVEAUX[niveau].pat;
   $('bande').innerHTML=pat.map((r,i)=>{
     let t=GET[r](b,fini?'marque':true);
     const vide=t===null; if(vide)t='…';
     if(fini&&i===pat.length-1)t+='<span class="marque pt">.</span>';
-    return `<span class="seg${vide?' vide':''}" style="--c:var(${ROLES[r].c})"><span class="w${voirNatures&&!vide?' nat':''}">${t}</span><span class="lab">${ROLES[r].lab}</span></span>`;
+    return `<span class="seg${vide?' vide':''}" style="--c:var(${ROLES[r].c})"><span class="w">${t}</span><span class="lab">${ROLES[r].lab}</span></span>`;
   }).join('');
   $('bLire').disabled=!phraseTexte();
   $('bAnnul').disabled=!hist.length;
@@ -552,13 +559,11 @@ function rendu(){
   document.body.classList.toggle('noimg',!voirImages);
   $('tFun').setAttribute('aria-pressed',String(voirFonctions));
   $('tImg').setAttribute('aria-pressed',String(voirImages));
-  $('tNat').setAttribute('aria-pressed',String(voirNatures));
   rendNiveaux();rendEtape();rendBande();
 }
 
 $('tFun').onclick=()=>{voirFonctions=!voirFonctions;rendu();};
 $('tImg').onclick=()=>{voirImages=!voirImages;rendu();};
-$('tNat').onclick=()=>{voirNatures=!voirNatures;rendu();};
 $('bTirage').onclick=()=>{tirage();nouvelle();};
 $('bLire').onclick=()=>dire(phraseTexte());
 $('bAnnul').onclick=annuler;
